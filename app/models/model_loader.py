@@ -8,6 +8,7 @@ from app.core.config import settings
 class ModelLoader:
     _instance = None
     _model = None
+    _threshold = 0.5  # Umbral por defecto para clasificar depresión
 
     def __new__(cls):
         if cls._instance is None:
@@ -31,6 +32,18 @@ class ModelLoader:
         except Exception as e:
             raise Exception(f"Error al cargar el modelo: {str(e)}")
 
+    def set_threshold(self, threshold: float) -> None:
+        """
+        Establecer el umbral para la clasificación de depresión.
+        
+        Args:
+            threshold (float): Valor entre 0 y 1 que determina el umbral de probabilidad
+                             para clasificar como depresión.
+        """
+        if not 0 <= threshold <= 1:
+            raise ValueError("El umbral debe estar entre 0 y 1")
+        self._threshold = threshold
+
     def predict(self, features: Dict[str, Any]) -> Dict[str, Any]:
         """
         Realizar una predicción utilizando el modelo cargado.
@@ -45,17 +58,18 @@ class ModelLoader:
             # Crear un DataFrame con una sola fila
             df = pd.DataFrame([features])
             
-            # Realizar predicción (0: No depresión, 1: Depresión)
-            prediction = self._model.predict(df)[0]
-            
             # Obtener las probabilidades de predicción [prob_no_depresión, prob_depresión]
             probabilities = self._model.predict_proba(df)[0]
             depression_probability = float(probabilities[1])  # Probabilidad de depresión (class 1)
             
+            # Usar el umbral para determinar la predicción
+            prediction = 1 if depression_probability >= self._threshold else 0
+            
             return {
-                "prediction": int(prediction),  # 0: No depression, 1: Depression
+                "prediction": prediction,  # 0: No depression, 1: Depression
                 "probability": depression_probability,  # Probabilidad de depresión
-                "interpretation": "Depresión detectada" if prediction == 1 else "Depresión no detectada"
+                "interpretation": "Depresión detectada" if prediction == 1 else "Depresión no detectada",
+                "threshold_used": self._threshold  # Incluir el umbral usado en la respuesta
             }
         except Exception as e:
             raise Exception(f"Error al realizar la predicción: {str(e)}")
