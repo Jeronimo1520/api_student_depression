@@ -60,3 +60,4 @@ class PredictionResponse(BaseModel):
     prediction: int = Field(..., description="Prediction (0: No depression, 1: Depression)")
     probability: float = Field(..., ge=0, le=1, description="Probabilidad de depresión")
     interpretation: str = Field(..., description="interpretación de la predicción") 
+    threshold_used: float = Field(..., description="Umbral usado para la predicción")
