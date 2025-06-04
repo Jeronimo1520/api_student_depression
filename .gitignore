@@ -34,7 +34,6 @@ ENV/
 .env
 
 # Model files
-*.pkl
 *.h5
 *.model
 
