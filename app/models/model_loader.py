@@ -20,7 +20,7 @@ class ModelLoader:
         "financial_stress_cat": ["bajo", "medio", "medio alto", "alto"],
         "academic_pressure_cat": ["bajo", "medio", "medio alto", "alto"],
         "cgpa_cat": ["bajo", "medio", "medio alto", "alto"],
-        "degree_grouped": ["Bachelor", "Master", "Doctorate"]
+        "degree_grouped": ["Bachelor", "Master", "Doctorate", "Other", "Class 12"]
     }
 
     def __new__(cls):
